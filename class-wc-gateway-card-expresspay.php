@@ -23,22 +23,20 @@ function add_wordpress_card_expresspay($methods) {
 }
 
 function init_card_gateway() {
-	if(!class_exists('WC_Payment_Gateway'))
+	if(!class_exists('WC_Payment_Gateway')  or class_exists('Wordpress_Card_Expresspay'))
 		return;
 
 	add_filter('woocommerce_payment_gateways', 'add_wordpress_card_expresspay');
 
-	load_plugin_textdomain("wordpress_card_expresspay", false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
+	load_plugin_textdomain("wordpress_card_expresspay", false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
 
 	class Wordpress_Card_Expresspay extends WC_Payment_Gateway {
 		private $plugin_dir;
 
 		public function __construct() {
 			$this->id = "expresspay_card";
-            //$this->method_title = __('Экспресс Платежи: Банковские карты');
-			//$this->method_description = __('Оплата по карте сервис «Экспресс Платежи»');
-			$this->method_title = $this->get_option('payment_methid_title');
-            $this->method_description = $this->get_option('payment_methid_description');
+            $this->method_title = __('Экспресс Платежи: Банковские карты', 'wordpress_card_expresspay');
+			$this->method_description = __('Оплата по карте сервис «Экспресс Платежи»', 'wordpress_card_expresspay');
 			$this->plugin_dir = plugin_dir_url(__FILE__);
 
 			$this->init_form_fields();
@@ -69,6 +67,23 @@ function init_card_gateway() {
 			add_action('woocommerce_api_wordpress_card_expresspay', array($this, 'check_ipn_response'));
 		}
 
+		function custom_send_email_notifications( $order_id, $old_status, $new_status, $order ){
+			if ( $new_status == 'pending payment' || $new_status == 'failed' ){
+
+			}
+			$this->log_info('process_payment', 'BLA BLA BLA BLA');
+		
+			if ( $new_status == 'pending payment' ) {
+
+			} 
+			elseif ( $new_status == 'failed' ) {
+				// change the recipient of this instance
+				$wc_emails['WC_Email_failed_Order']->recipient = $customer_email;
+				// Sending the email from this instance
+				$wc_emails['WC_Email_failed_Order']->trigger( $order_id );
+			} 
+		}
+
 		public function admin_options() {
 			?>
 			<h3><?php _e('«Экспресс Платежи: Оплата по карте', 'wordpress_card_expresspay'); ?></h3>
@@ -78,7 +93,7 @@ function init_card_gateway() {
             <div style="margin-left: 6px; margin-top: 15px; display: inline-block;">
 				<?php _e('«Экспресс Платежи: Оплата по карте» - плагин для интеграции с сервисом «Экспресс Платежи» (express-pay.by) через API. 
 				<br/>Плагин позволяет выставить счет для оплаты по карте, получить и обработать уведомление о платеже.
-				<br/>Описание плагина доступно по адресу: ', 'wordpress_card_expresspay'); ?><a target="blank" href="https://express-pay.by/cms-extensions/wordpress#woocommerce_2_x">https://express-pay.by/cms-extensions/wordpress#woocommerce_2_x</a>
+				<br/>Описание плагина доступно по адресу: ', 'wordpress_card_expresspay'); ?><a target="blank" href="https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x">https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x</a>
             </div>
 
 			<table class="form-table">
@@ -248,6 +263,14 @@ function init_card_gateway() {
 			$this->log_info('generate_expresspay_form', 'Initialization request for add invoice');
 			$order = new WC_Order($order_id);
 
+			//отправка E-MAIL с информацией по счёту
+			$wc_emails = WC()->mailer()->get_emails(); 
+			$customer_email = $order->get_billing_email(); 
+
+			$wc_emails['WC_Email_Customer_Invoice']->recipient = $customer_email;
+
+			$wc_emails['WC_Email_Customer_Invoice']->trigger( $order_id );
+
 			$price = preg_replace('#[^\d.]#', '', $order->get_total());
 			$price = str_replace('.', ',', $price);
 			
@@ -270,7 +293,7 @@ function init_card_gateway() {
 			$signature = $this->compute_signature_add_invoice($request_params, $this->secret_word);
 
 			$request_params['Signature'] = $signature;
-			
+
 			$this->log_info('generate_expresspay_form', 'Send POST request; ORDER ID - ' . $order_id . '; URL - ' . $this->url . '; TOKEN - ' . $this->token . '; REQUEST - ' . json_encode($request_params));
 			
 			$html = '<form action="' . $this->url . '" method="post" name="expresspay_form" >';
@@ -286,6 +309,7 @@ function init_card_gateway() {
 
 			return $html;
 		}
+
 
 		private function success($order_id) {
 			global $woocommerce;
@@ -440,7 +464,9 @@ function init_card_gateway() {
 	        $result = $this->token;
 
 	        foreach ($api_method as $item)
-	            $result .= ( isset($normalized_params[$item]) ) ? $normalized_params[$item] : '';
+				$result .= ( isset($normalized_params[$item]) ) ? $normalized_params[$item] : '';
+				
+			$this->log_info('compute_signature', 'RESULT - ' . $result);
 
 	        $hash = strtoupper(hash_hmac('sha1', $result, $secret_word));
 
