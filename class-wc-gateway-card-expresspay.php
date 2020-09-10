@@ -3,16 +3,18 @@
   Plugin Name: «Экспресс Платежи: Банковские карты» для WooCommerce
   Plugin URI: https://express-pay.by/cms-extensions/wordpress
   Description: «Экспресс Платежи: Банковские карты» - плагин для интеграции с сервисом «Экспресс Платежи» (express-pay.by) через API. Плагин позволяет выставлять счета для оплаты банковскими картами, получать и обрабатывать уведомления о платеже по банковской карте. Описание плагина доступно по адресу: <a target="blank" href="https://express-pay.by/cms-extensions/wordpress">https://express-pay.by/cms-extensions/wordpress</a>
-  Version: 3.1
+  Version: 1.0.0
   Author: ООО «ТриИнком»
   Author URI: https://express-pay.by/
+  License: GPLv2 or later
+  License URI: http://www.gnu.org/licenses/gpl-2.0.html
   WC requires at least: 4.0
-  WC tested up to: 4.7
+  WC tested up to: 4.3
  */
 
 if(!defined('ABSPATH')) exit;
 
-define("CARD_EXPRESSPAY_VERSION", "3.0.2");
+define("CARD_EXPRESSPAY_VERSION", "1.0.0");
 
 add_action('plugins_loaded', 'init_card_gateway', 0);
 
@@ -403,16 +405,39 @@ function init_card_gateway() {
 	        if(isset($data->CmdType)) {
 	        	switch ($data->CmdType) {
 	        		case '1':
-						$order->update_status($this->status_after_payment, __('Счет успешно успешно и ожидает оплаты', 'wordpress_card_expresspay'));
-	                    $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет успешно оплачен; RESPONSE - ' . $dataJSON);
+	                    $order->update_status('pending_payment', __('Счет ожидает оплаты', 'wordpress_card_expresspay'));
+	                    $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет ожидает оплаты; RESPONSE - ' . $dataJSON);
+
 	        			break;
 	        		case '2':
-						$order->update_status($this->status_after_cancellation, __('Платеж отменён', 'wordpress_card_expresspay'));
+						$order->update_status('cancelled', __('Платеж отменён', 'wordpress_card_expresspay'));
 						$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Платеж отменён; RESPONSE - '. $dataJSON);
-						break;
+
+	        			break;
 					case '3':
-						$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет успешно оплачен; RESPONSE - ' . $dataJSON);
-						break;
+						if($data->Status == '1'){
+                            $order->update_status('pending_payment', __('Счет ожидает оплаты', 'wordpress_card_expresspay'));
+                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет ожидает оплаты; RESPONSE - '. $dataJSON);
+						}
+                        elseif($data->Status == '2'){
+                            $order->update_status('cancelled', __('Счет просрочен', 'wordpress_card_expresspay'));
+                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет просрочен; RESPONSE - '. $dataJSON);
+						}
+						elseif($data->Status == '3'){
+                            $order->update_status('processing', __('Счет оплачен', 'wordpress_card_expresspay'));
+                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен; RESPONSE - '. $dataJSON);
+                        }
+						elseif($data->Status == '5'){
+                        
+                            $order->update_status('cancelled', __('Счет отменен', 'wordpress_card_expresspay'));
+                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет отменен; RESPONSE - '. $dataJSON);
+						}
+						elseif($data->Status == '6'){
+                        
+                            $order->update_status('processing', __('Счет оплачен картой', 'wordpress_card_expresspay'));
+                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен картой; RESPONSE - '. $dataJSON);
+                        }
+	        			break;
 	        		default:
 						$this->notify_fail($dataJSON);
 						die();
