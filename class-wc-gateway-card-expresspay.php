@@ -134,7 +134,7 @@ function init_card_gateway() {
 					'title'   => __('Адрес для уведомлений', 'wordpress_card_expresspay'),
 					'type'    => 'text',
 					'css' => 'display: none;',
-					'description' => get_site_url() . '/?wc-api=wc_card_expresspay&action=notify'
+					'description' => get_site_url() . '/?wc-api=wordpress_card_expresspay&action=notify'
 				),
 				'secret_key' => array(
 					'title'   => __('Секретное слово для подписи счетов', 'wordpress_card_expresspay'),
