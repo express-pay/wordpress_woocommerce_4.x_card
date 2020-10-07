@@ -530,7 +530,7 @@ function init_card_gateway() {
 
 	    private function log($name, $type, $message) {
 			$log_url = wp_upload_dir();
-			$log_url = $log_url['basedir'] . "/erip_expresspay";
+			$log_url = $log_url['basedir'] . "/card_expresspay";
 
 			if(!file_exists($log_url)) {
 				$is_created = mkdir($log_url, 0777);
