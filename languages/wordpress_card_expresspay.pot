@@ -1,0 +1,231 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Экспресс Платежи: Интернет-эквайринг\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-26 13:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.5.3; wp-5.8\n"
+"X-Domain: wordpress_card_expresspay"
+
+#: class-wc-gateway-card-expresspay.php:125
+#: class-wc-gateway-card-expresspay.php:137
+msgid ""
+"A secret word that is known only to the server and the client. Used to "
+"generate a digital signature. Set in the panel express-pay.by"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:117
+msgid "Address for notifications"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:170
+msgid ""
+"An unexpected error occurred while executing the request. Please try again "
+"later or contact the store's technical support"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:152
+msgid "API address"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:195
+msgid "Description of the payment method"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:197
+msgid "Description that will be displayed in the payment method settings"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:100
+msgid "Enable/Disable"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:333
+msgid "Error of payment for the order with a bank card"
+msgstr ""
+
+#. Name of the plugin
+#: class-wc-gateway-card-expresspay.php:42
+#: class-wc-gateway-card-expresspay.php:74
+#: class-wc-gateway-card-expresspay.php:191
+msgid "Express Payments: Internet-Acquiring"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:79
+msgid ""
+"Express Payments: Internet-Acquiring - plugin for integration with the "
+"Express Payments service (express-pay.by) via API.\n"
+"\t\t\t\t<br/>The plugin allows you to issue an invoice for a card payment, "
+"receive and process a payment notification.\n"
+"\t\t\t\t<br/>The plugin description is available at: "
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Express Payments: Internet-Acquiring - plugin for integration with the "
+"Express Payments service (express-pay.by) via API. The plugin allows you to "
+"issue invoices for payments by bank cards, receive and process notifications "
+"about payments by bank cards. The plugin description is available at: <a "
+"target=\"blank\" href=\"https://express-pay.by/cms-extensions/wordpress\">"
+"https://express-pay.by/cms-extensions/wordpress</a>"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:107
+msgid "Generated in the panel express-pay.by"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://express-pay.by/"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://express-pay.by/cms-extensions/wordpress"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:395
+msgid "Invoice awaiting payment"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:404
+msgid "Invoice canceled"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:398
+msgid "Invoice expired"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:329
+msgid "Invoice not paid"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:407
+msgid "Invoice paid by card"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:307
+#: class-wc-gateway-card-expresspay.php:311
+msgid "Invoice paid successfully"
+msgstr ""
+
+#. Author of the plugin
+msgid "LLC \"TriInkom\""
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:168
+msgid "Order error message"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:164
+msgid ""
+"Order number \"##order_id##\" has been successfully paid. Click \"continue\"."
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:43
+msgid "Payment by card service \"Express Payments\""
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:198
+msgid "Payment by card service Express Payments"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:389
+msgid "Payment canceled"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:188
+msgid "Payment method name"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:314
+msgid "Proceed"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:123
+msgid "Secret word for signing invoices"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:135
+msgid "Secret word for signing notifications"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:111
+msgid "Service number"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:113
+msgid "Service number in express-pay.by"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:141
+msgid "Session duration"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:181
+msgid "Status after cancellation"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:174
+msgid "Status after payment"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:162
+msgid "Successful order message"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:157
+msgid "Test API address"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:385
+#: class-wc-gateway-card-expresspay.php:401
+msgid "The bill is paid"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:190
+msgid ""
+"The name that will be displayed in the cart when choosing a payment method"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:183
+msgid "The status that the order will have after cancellation"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:176
+msgid "The status that the order will have after payment"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:143
+msgid ""
+"The time interval specified in seconds during which the client can make a "
+"payment (ranges from 600 seconds (10 minutes) to 86400 seconds (1 day)). The "
+"default is 1200 seconds (20 minutes)"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:105
+msgid "Token"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:335
+msgid "Try again"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:148
+msgid "Use test mode"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:92
+msgid "Version"
+msgstr ""
+
+#: class-wc-gateway-card-expresspay.php:91
+msgid "© All rights reserved | ООО «TriInkom»,"
+msgstr ""

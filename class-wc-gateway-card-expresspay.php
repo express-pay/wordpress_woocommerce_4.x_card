@@ -1,22 +1,24 @@
 <?php
 /*
-  Plugin Name: «Экспресс Платежи: Банковские карты» для WooCommerce
+  Plugin Name: Express Payments: Internet-Acquiring
   Plugin URI: https://express-pay.by/cms-extensions/wordpress
-  Description: «Экспресс Платежи: Банковские карты» - плагин для интеграции с сервисом «Экспресс Платежи» (express-pay.by) через API. Плагин позволяет выставлять счета для оплаты банковскими картами, получать и обрабатывать уведомления о платеже по банковской карте. Описание плагина доступно по адресу: <a target="blank" href="https://express-pay.by/cms-extensions/wordpress">https://express-pay.by/cms-extensions/wordpress</a>
-  Version: 1.0.0
-  Author: ООО «ТриИнком»
+  Description: Express Payments: Internet-Acquiring - plugin for integration with the Express Payments service (express-pay.by) via API. The plugin allows you to issue invoices for payments by bank cards, receive and process notifications about payments by bank cards. The plugin description is available at: <a target="blank" href="https://express-pay.by/cms-extensions/wordpress">https://express-pay.by/cms-extensions/wordpress</a>
+  Version: 1.0.5
+  Author: LLC "TriInkom"
   Author URI: https://express-pay.by/
   License: GPLv2 or later
   License URI: http://www.gnu.org/licenses/gpl-2.0.html
   WC requires at least: 4.0
-  WC tested up to: 4.3
+  WC tested up to: 5.6
+  Text Domain: wordpress_card_expresspay
+  Domain Path: /languages
  */
 
 if(!defined('ABSPATH')) exit;
 
-define("CARD_EXPRESSPAY_VERSION", "1.0.0");
+define("CARD_EXPRESSPAY_VERSION", "1.0.5");
 
-add_action('plugins_loaded', 'init_card_gateway', 0);
+add_action('plugins_loaded', 'card_expresspay_gateway', 0);
 
 function add_wordpress_card_expresspay($methods) {
 	$methods[] = 'wordpress_card_expresspay';
@@ -24,7 +26,7 @@ function add_wordpress_card_expresspay($methods) {
 	return $methods;
 }
 
-function init_card_gateway() {
+function card_expresspay_gateway() {
 	if(!class_exists('WC_Payment_Gateway')  or class_exists('Wordpress_Card_Expresspay'))
 		return;
 
@@ -37,16 +39,14 @@ function init_card_gateway() {
 
 		public function __construct() {
 			$this->id = "expresspay_card";
-            $this->method_title = __('Экспресс Платежи: Банковские карты', 'wordpress_card_expresspay');
-			$this->method_description = __('Оплата по карте сервис «Экспресс Платежи»', 'wordpress_card_expresspay');
+            $this->method_title = __('Express Payments: Internet-Acquiring', 'wordpress_card_expresspay');
+			$this->method_description = __('Payment by card service "Express Payments"', 'wordpress_card_expresspay');
 			$this->plugin_dir = plugin_dir_url(__FILE__);
 
-			$this->init_form_fields();
-			$this->init_settings();
-
-			//$this->title = __("Банковская карта", 'wordpress_card_expresspay');
+			$this->card_expresspay_form_fields();
 			
-			$this->title = $this->get_option('payment_methid_title');
+			$this->title = $this->get_option('payment_method_title');
+			$this->description = $this->get_option('payment_method_description');
 			
             $this->token = $this->get_option('token');
             $this->service_id = $this->get_option('service_id');
@@ -69,33 +69,16 @@ function init_card_gateway() {
 			add_action('woocommerce_api_wordpress_card_expresspay', array($this, 'check_ipn_response'));
 		}
 
-		function custom_send_email_notifications( $order_id, $old_status, $new_status, $order ){
-			if ( $new_status == 'pending payment' || $new_status == 'failed' ){
-
-			}
-			$this->log_info('process_payment', 'BLA BLA BLA BLA');
-		
-			if ( $new_status == 'pending payment' ) {
-
-			} 
-			elseif ( $new_status == 'failed' ) {
-				// change the recipient of this instance
-				$wc_emails['WC_Email_failed_Order']->recipient = $customer_email;
-				// Sending the email from this instance
-				$wc_emails['WC_Email_failed_Order']->trigger( $order_id );
-			} 
-		}
-
 		public function admin_options() {
 			?>
-			<h3><?php _e('«Экспресс Платежи: Оплата по карте', 'wordpress_card_expresspay'); ?></h3>
-            <div style="float: left; display: inline-block;">
-                 <a target="_blank" href="https://express-pay.by"><img src="<?php echo $this->plugin_dir; ?>assets/images/erip_expresspay_big.png" width="270" height="91" alt="exspress-pay.by" title="express-pay.by"></a>
+			<h3><?php echo __('Express Payments: Internet-Acquiring', 'wordpress_card_expresspay'); ?></h3>
+            <div style="display: inline-block;">
+                 <a target="_blank" href="https://express-pay.by"><img src="<?php echo $this->plugin_dir; ?>assets/images/erip_expresspay_big.png" alt="exspress-pay.by" title="express-pay.by"></a>
             </div>
-            <div style="margin-left: 6px; margin-top: 15px; display: inline-block;">
-				<?php _e('«Экспресс Платежи: Оплата по карте» - плагин для интеграции с сервисом «Экспресс Платежи» (express-pay.by) через API. 
-				<br/>Плагин позволяет выставить счет для оплаты по карте, получить и обработать уведомление о платеже.
-				<br/>Описание плагина доступно по адресу: ', 'wordpress_card_expresspay'); ?><a target="blank" href="https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x">https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x</a>
+            <div style="margin-left: 6px; display: inline-block;">
+				<?php _e('Express Payments: Internet-Acquiring - plugin for integration with the Express Payments service (express-pay.by) via API.
+				<br/>The plugin allows you to issue an invoice for a card payment, receive and process a payment notification.
+				<br/>The plugin description is available at: ', 'wordpress_card_expresspay'); ?><a target="blank" href="https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x">https://express-pay.by/cms-extensions/wordpress#woocommerce_4_x</a>
             </div>
 
 			<table class="form-table">
@@ -105,114 +88,114 @@ function init_card_gateway() {
 			</table>
 
 			<div class="copyright" style="text-align: center;">
-				<?php _e("© Все права защищены | ООО «ТриИнком»,", 'wordpress_card_expresspay'); ?> 2013-<?php echo date("Y"); ?><br/>
-				<?php echo __('Версия', 'wordpress_card_expresspay') . " " . CARD_EXPRESSPAY_VERSION ?>			
+				<?php _e("© All rights reserved | ООО «TriInkom»,", 'wordpress_card_expresspay'); ?> 2013-<?php echo date("Y"); ?><br/>
+				<?php echo __('Version', 'wordpress_card_expresspay') . " " . CARD_EXPRESSPAY_VERSION ?>			
 			</div>
 			<?php
 		}
 
-		function init_form_fields() {
+		function card_expresspay_form_fields() {
 			$this->form_fields = array(
 				'enabled' => array(
-					'title'   => __('Включить/Выключить', 'wordpress_card_expresspay'),
+					'title'   => __('Enable/Disable', 'wordpress_card_expresspay'),
 					'type'    => 'checkbox',
 					'default' => 'no'
 				),
 				'token' => array(
-					'title'   => __('Токен', 'wordpress_card_expresspay'),
+					'title'   => __('Token', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Генерирутся в панели express-pay.by', 'wordpress_card_expresspay'),
+					'description' => __('Generated in the panel express-pay.by', 'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
 				'service_id' => array(
-					'title'   => __('Номер услуги', 'wordpress_card_expresspay'),
+					'title'   => __('Service number', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Номер услуги в системе express-pay.by', 'wordpress_card_expresspay'),
+					'description' => __('Service number in express-pay.by', 'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
 				'handler_url' => array(
-					'title'   => __('Адрес для уведомлений', 'wordpress_card_expresspay'),
+					'title'   => __('Address for notifications', 'wordpress_card_expresspay'),
 					'type'    => 'text',
 					'css' => 'display: none;',
 					'description' => get_site_url() . '/?wc-api=wordpress_card_expresspay&action=notify'
 				),
 				'secret_key' => array(
-					'title'   => __('Секретное слово для подписи счетов', 'wordpress_card_expresspay'),
+					'title'   => __('Secret word for signing invoices', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Секретного слово, которое известно только серверу и клиенту. Используется для формирования цифровой подписи. Задается в панели express-pay.by', 'wordpress_card_expresspay'),
+					'description' => __('A secret word that is known only to the server and the client. Used to generate a digital signature. Set in the panel express-pay.by', 'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
 				'is_use_signature_notify' => array(
-					'title'   => __('Использовать цифровую подпись для уведомлений', 'wordpress_erip_expresspay'),
+					'title'   => __('Use digitally sign notifications', 'wordpress_erip_expresspay'),
 					'type'    => 'checkbox',
-					'description' => __('Использовать цифровую подпись для уведомлений', 'wordpress_erip_expresspay'),
+					'description' => __('Use digitally sign notifications', 'wordpress_erip_expresspay'),
 					'desc_tip'    => true
 				),
-				'secret_key_norify' => array(
-					'title'   => __('Секретное слово для подписи уведомлений', 'wordpress_card_expresspay'),
+				'secret_key_notify' => array(
+					'title'   => __('Secret word for signing notifications', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Секретного слово, которое известно только серверу и клиенту. Используется для формирования цифровой подписи. Задается в панели express-pay.by', 'wordpress_card_expresspay'),
+					'description' => __('A secret word that is known only to the server and the client. Used to generate a digital signature. Set in the panel express-pay.by', 'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
 				'session_timeout_secs' => array(
-					'title'   => __('Продолжительность сессии', 'wordpress_card_expresspay'),
+					'title'   => __('Session duration', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Временной промежуток указанный в секундах, за время которого клиент может совершить платеж (находится в промежутке от 600 секунд (10 минут) до 86400 секунд (1 сутки) ). По-умолчанию равен 1200 секунд (20 минут)', 'wordpress_card_expresspay'),
+					'description' => __('The time interval specified in seconds during which the client can make a payment (ranges from 600 seconds (10 minutes) to 86400 seconds (1 day)). The default is 1200 seconds (20 minutes)', 'wordpress_card_expresspay'),
 					'default' => '1200',
                     'desc_tip'    => true
 				),
 				'test_mode' => array(
-					'title'   => __('Использовать тестовый режим', 'wordpress_card_expresspay'),
+					'title'   => __('Use test mode', 'wordpress_card_expresspay'),
 					'type'    => 'checkbox'
 				),
 				'url_api' => array(
-					'title'   => __('Адрес API', 'wordpress_card_expresspay'),
+					'title'   => __('API address', 'wordpress_card_expresspay'),
 					'type'    => 'text',
 					'default' => 'https://api.express-pay.by'
 				),
 				'url_sandbox_api' => array(
-					'title'   => __('Адрес тестового API', 'wordpress_card_expresspay'),
+					'title'   => __('Test API address', 'wordpress_card_expresspay'),
 					'type'    => 'text',
 					'default' => 'https://sandbox-api.express-pay.by'
 				),
 				'message_success' => array(
-					'title'   => __('Сообщение при успешном заказе', 'wordpress_card_expresspay'),
+					'title'   => __('Successful order message', 'wordpress_card_expresspay'),
 					'type'    => 'textarea',
-					'default' => __('Заказ номер "##order_id##" успешно оплачен. Нажмите "продолжить".', 'wordpress_card_expresspay'),
+					'default' => __('Order number "##order_id##" has been successfully paid. Click "continue".', 'wordpress_card_expresspay'),
 					'css'	  => 'min-height: 160px;'
 				),
                 'message_fail' => array(
-					'title'   => __('Сообщение при ошибке заказа', 'wordpress_card_expresspay'),
+					'title'   => __('Order error message', 'wordpress_card_expresspay'),
 					'type'    => 'textarea',
-					'default' => __('При выполнении запроса произошла непредвиденная ошибка. Пожалуйста, повторите запрос позже или обратитесь в службу технической поддержки магазина', 'wordpress_card_expresspay'),
+					'default' => __("An unexpected error occurred while executing the request. Please try again later or contact the store's technical support", 'wordpress_card_expresspay'),
 					'css'	  => 'min-height: 160px;'
 				),
-				'status_after_payment'         => array(
-					'title'       => __( 'Статус после оплаты', 'woocommerce' ),
+				'status_after_payment' => array(
+					'title'       => __( 'Status after payment', 'wordpress_card_expresspay' ),
 					'type'        => 'select',
-					'description' => __( 'Статус, который будет иметь заказ после оплаты', 'woocommerce' ),
+					'description' => __( 'The status that the order will have after payment', 'wordpress_card_expresspay' ),
 					'options'     => wc_get_order_statuses(),
 					'desc_tip'    => true,
 				),
 				'status_after_cancellation'    => array(
-					'title'       => __( 'Статус после отмены', 'woocommerce' ),
+					'title'       => __( 'Status after cancellation', 'wordpress_card_expresspay' ),
 					'type'        => 'select',
-					'description' => __( 'Статус, который будет иметь заказ после отмены', 'woocommerce' ),
+					'description' => __( 'The status that the order will have after cancellation', 'wordpress_card_expresspay' ),
 					'options'     => wc_get_order_statuses(),
 					'desc_tip'    => true,
 				),
-				'payment_methid_title' => array(
-					'title'   => __('Название метода оплаты', 'wordpress_card_expresspay'),
+				'payment_method_title' => array(
+					'title'   => __('Payment method name', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Название, которое будет отображаться в корзине, при выборе метода оплаты', 'wordpress_card_expresspay'),
-					'default' 	=> __("Экспресс Платежи: Банковские карты",'wordpress_card_expresspay'),
+					'description' => __('The name that will be displayed in the cart when choosing a payment method', 'wordpress_card_expresspay'),
+					'default' 	=> __("Express Payments: Internet-Acquiring",'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
-				'payment_methid_description' => array(
-					'title'   => __('Описание метода оплаты', 'wordpress_card_expresspay'),
+				'payment_method_description' => array(
+					'title'   => __('Description of the payment method', 'wordpress_card_expresspay'),
 					'type'    => 'text',
-					'description' => __('Описание, которое будет отображаться в настройках методах оплаты', 'wordpress_card_expresspay'),
-					'default' 	=> __("Оплата по карте сервис «Экспресс Платежи»",'wordpress_card_expresspay'),
+					'description' => __('Description that will be displayed in the payment method settings', 'wordpress_card_expresspay'),
+					'default' 	=> __("Payment by card service Express Payments",'wordpress_card_expresspay'),
 					'desc_tip'    => true
 				),
 			);
@@ -234,7 +217,7 @@ function init_card_gateway() {
 
 			if(isset($_REQUEST['status']))
 			{
-				$this->log_info('process_payment', 'STATUS - ' . $_REQUEST['status']);
+				$this->log_info('process_payment', 'STATUS - ' . sanitize_text_field($_REQUEST['status']));
 
 				switch($_REQUEST['status'])
 				{
@@ -265,14 +248,6 @@ function init_card_gateway() {
 			$this->log_info('generate_expresspay_form', 'Initialization request for add invoice');
 			$order = new WC_Order($order_id);
 
-			//отправка E-MAIL с информацией по счёту
-			$wc_emails = WC()->mailer()->get_emails(); 
-			$customer_email = $order->get_billing_email(); 
-
-			$wc_emails['WC_Email_Customer_Invoice']->recipient = $customer_email;
-
-			$wc_emails['WC_Email_Customer_Invoice']->trigger( $order_id );
-
 			$price = preg_replace('#[^\d.]#', '', $order->get_total());
 			$price = str_replace('.', ',', $price);
 			
@@ -283,13 +258,12 @@ function init_card_gateway() {
 				"AccountNo" 			=> 	$order_id,
 				"Amount" 				=> 	$price,
 				"Currency" 				=> 	$currency,
-				"Info" 					=> 	"Покупка в магазине ",
-				"Language"				=> "ru",
-				"SessionTimeoutSecs"	=> 1200,
+				"Info" 					=> 	"Покупка в магазине",
+				"Language"				=>  "ru",
+				"SessionTimeoutSecs"	=>  1200,
 				'ReturnType'			=> 	'redirect',				
 				"ReturnUrl" 			=> 	get_site_url() . add_query_arg('status', 'success', add_query_arg('order-pay', $order->get_order_number(), add_query_arg('key', $order->get_order_key(), get_permalink(wc_get_page_id($order->get_checkout_payment_url()))))),
 				"FailUrl" 				=> 	get_site_url() . add_query_arg('status', 'fail', add_query_arg('order-pay', $order->get_order_number(), add_query_arg('key', $order->get_order_key(), get_permalink(wc_get_page_id($order->get_checkout_payment_url()))))),
-				"Signature" 			=> 	''
 			);
 
 			$signature = $this->compute_signature_add_invoice($request_params, $this->secret_word);
@@ -322,8 +296,6 @@ function init_card_gateway() {
 			$this->log_info('success', 'Initialization render success page; ORDER ID - ' . $order->get_order_number());
 
 			$woocommerce->cart->empty_cart();
-
-			//$order->update_status('completed', __('Счет успешно оплачен', 'wordpress_card_expresspay'));
 			
 			wc_get_template(
 				'order/order-details.php',
@@ -332,14 +304,14 @@ function init_card_gateway() {
 				)
 			);
 
-			$order->update_status($this->status_after_payment, __('Счет успешно успешно и ожидает оплаты', 'wordpress_card_expresspay'));
+			$order->update_status($this->status_after_payment, __('Invoice paid successfully', 'wordpress_card_expresspay'));
 
 			$html = '';
 
-			$html .= '<h2>' . __('Счет успешно оплачен', 'wordpress_card_expresspay') . '</h2>';
+			$html .= '<h2>' . __('Invoice paid successfully', 'wordpress_card_expresspay') . '</h2>';
 			$html .= str_replace("##order_id##", $order->get_order_number(), nl2br($this->message_success, true));
 
-			$html .= '<br/><br/><p class="return-to-shop"><a class="button wc-backward" href="' . get_permalink( wc_get_page_id( "shop" ) ) . '">' . __('Продолжить', 'wordpress_card_expresspay') . '</a></p>';
+			$html .= '<br/><br/><p class="return-to-shop"><a class="button wc-backward" href="' . get_permalink( wc_get_page_id( "shop" ) ) . '">' . __('Proceed', 'wordpress_card_expresspay') . '</a></p>';
 
 			$this->log_info('success', 'End render success page; ORDER ID - ' . $order->get_order_number());
 
@@ -354,13 +326,13 @@ function init_card_gateway() {
 			$this->log_info('receipt_page', 'End request for add invoice');
 			$this->log_info('fail', 'Initialization render fail page; ORDER ID - ' . $order->get_order_number());
 
-			$order->update_status('failed', __('Платеж не оплачен', 'wordpress_card_expresspay'));
+			$order->update_status($this->status_after_cancellation, __('Invoice not paid', 'wordpress_card_expresspay'));
 
 			$this->log_info('fail', 'End render fail page; ORDER ID - ' . $order->get_order_number());
 
-			$html = '<h2>' . __('Ошибка оплаты заказа по банковской карте', 'wordpress_card_expresspay') . '</h2>';
+			$html = '<h2>' . __('Error of payment for the order with a bank card', 'wordpress_card_expresspay') . '</h2>';
 			$html .= str_replace("##order_id##", $order->get_order_number(), nl2br($this->message_fail, true));
-			$html .= '<br/><br/><p class="return-to-shop"><a class="button wc-backward" href="' . wc_get_checkout_url() . '">' . __('Попробовать заново', 'wordpress_card_expresspay') . '</a></p>';
+			$html .= '<br/><br/><p class="return-to-shop"><a class="button wc-backward" href="' . wc_get_checkout_url() . '">' . __('Try again', 'wordpress_card_expresspay') . '</a></p>';
 
 			$this->log_info('fail', 'End render fail page; ORDER ID - ' . $order->get_order_number());
 
@@ -370,10 +342,10 @@ function init_card_gateway() {
 		function check_ipn_response() {
 			$this->log_info('check_ipn_response', 'Get notify from server; REQUEST METHOD - ' . $_SERVER['REQUEST_METHOD']);
 
-			if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_REQUEST['action']) && $_REQUEST['action'] == 'notify') {
-				$data = ( isset($_REQUEST['Data']) ) ? htmlspecialchars_decode($_REQUEST['Data']) : '';
+			if (sanitize_text_field($_SERVER['REQUEST_METHOD'] === 'POST') && isset($_REQUEST['action']) && sanitize_text_field($_REQUEST['action'] == 'notify')) {
+				$data = ( isset($_REQUEST['Data']) ) ? sanitize_text_field($_REQUEST['Data']) : '';
 				$data = stripcslashes($data);
-				$signature = ( isset($_REQUEST['Signature']) ) ? $_REQUEST['Signature'] : '';
+				$signature = ( isset($_REQUEST['Signature']) ) ? sanitize_text_field($_REQUEST['Signature']) : '';
 
 			    if($this->is_use_signature_notify) {
 			    	if($signature == $this->compute_signature($data, $this->secret_key_notify))
@@ -400,51 +372,49 @@ function init_card_gateway() {
 	    		$this->notify_fail($dataJSON);
 	    	}
 
-            $order = new WC_Order($data->AccountNo);
+			try{
+				$order = new WC_Order($data->AccountNo);
+			} catch (Exception $e){
+				$this->log_error('notify_success', "Fail find to order!");
+				die();
+			}
 
-	        if(isset($data->CmdType)) {
-	        	switch ($data->CmdType) {
-	        		case '1':
-	                    $order->update_status('pending_payment', __('Счет ожидает оплаты', 'wordpress_card_expresspay'));
-	                    $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет ожидает оплаты; RESPONSE - ' . $dataJSON);
+			if (isset($data->CmdType)) {
+				switch ($data->CmdType) {
+					case '1':
+						$order->update_status($this->status_after_payment, __('The bill is paid', 'wordpress_card_expresspay'));
+						$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен; RESPONSE - ' . $dataJSON);
+						break;
+					case '2':
+						$order->update_status($this->status_after_cancellation, __('Payment canceled', 'wordpress_card_expresspay'));
+						$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Платеж отменён; RESPONSE - ' . $dataJSON);
 
-	        			break;
-	        		case '2':
-						$order->update_status('cancelled', __('Платеж отменён', 'wordpress_card_expresspay'));
-						$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Платеж отменён; RESPONSE - '. $dataJSON);
-
-	        			break;
+						break;
 					case '3':
-						if($data->Status == '1'){
-                            $order->update_status('pending_payment', __('Счет ожидает оплаты', 'wordpress_card_expresspay'));
-                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет ожидает оплаты; RESPONSE - '. $dataJSON);
+						if ($data->Status == '1') {
+							$order->update_status('pending_payment', __('Invoice awaiting payment', 'wordpress_card_expresspay'));
+							$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет ожидает оплаты; RESPONSE - ' . $dataJSON);
+						} elseif ($data->Status == '2') {
+							$order->update_status($this->status_after_cancellation, __('Invoice expired', 'wordpress_card_expresspay'));
+							$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет просрочен; RESPONSE - ' . $dataJSON);
+						} elseif ($data->Status == '3') {
+							$order->update_status($this->status_after_payment, __('The bill is paid', 'wordpress_card_expresspay'));
+							$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен; RESPONSE - ' . $dataJSON);
+						} elseif ($data->Status == '5') {
+							$order->update_status($this->status_after_cancellation, __('Invoice canceled', 'wordpress_card_expresspay'));
+							$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет отменен; RESPONSE - ' . $dataJSON);
+						} elseif ($data->Status == '6') {
+							$order->update_status($this->status_after_payment, __('Invoice paid by card', 'wordpress_card_expresspay'));
+							$this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен картой; RESPONSE - ' . $dataJSON);
 						}
-                        elseif($data->Status == '2'){
-                            $order->update_status('cancelled', __('Счет просрочен', 'wordpress_card_expresspay'));
-                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет просрочен; RESPONSE - '. $dataJSON);
-						}
-						elseif($data->Status == '3'){
-                            $order->update_status('processing', __('Счет оплачен', 'wordpress_card_expresspay'));
-                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен; RESPONSE - '. $dataJSON);
-                        }
-						elseif($data->Status == '5'){
-                        
-                            $order->update_status('cancelled', __('Счет отменен', 'wordpress_card_expresspay'));
-                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет отменен; RESPONSE - '. $dataJSON);
-						}
-						elseif($data->Status == '6'){
-                        
-                            $order->update_status('processing', __('Счет оплачен картой', 'wordpress_card_expresspay'));
-                            $this->log_info('notify_success', 'Initialization to update status. STATUS ID - Счет оплачен картой; RESPONSE - '. $dataJSON);
-                        }
-	        			break;
-	        		default:
+						break;
+					default:
 						$this->notify_fail($dataJSON);
 						die();
-	        	}
+				}
 
-		    	header("HTTP/1.0 200 OK");
-		    	echo 'SUCCESS';
+				header("HTTP/1.0 200 OK");
+				echo 'SUCCESS';
 	        } else
 				$this->notify_fail($dataJSON);	
 		}
@@ -541,7 +511,7 @@ function init_card_gateway() {
 
 			$log_url .= '/express-pay-' . date('Y.m.d') . '.log';
 
-			file_put_contents($log_url, $type . " - IP - " . $_SERVER['REMOTE_ADDR'] .  "; DATETIME - " .date("Y-m-d H:i:s").  "; USER AGENT - " . $_SERVER['HTTP_USER_AGENT'] . "; FUNCTION - " . $name . "; MESSAGE - " . $message . ';' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_url, $type . " - IP - " . sanitize_text_field($_SERVER['REMOTE_ADDR']) .  "; DATETIME - " .date("Y-m-d H:i:s").  "; USER AGENT - " . sanitize_text_field($_SERVER['HTTP_USER_AGENT']) . "; FUNCTION - " . $name . "; MESSAGE - " . $message . ';' . PHP_EOL, FILE_APPEND);
 	    }
 	}
 }
