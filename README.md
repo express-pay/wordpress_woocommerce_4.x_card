@@ -3,4 +3,6 @@
  
 <a href="https://express-pay.by/extensions/woocommerce-4-x/acquiring">Инструкция для установки и настройки</a>
   
-<a href="https://www.youtube.com/c/express-pay-by">Наш Youtube канал с опубликованными видео по расширениям</a>
+<a href="https://www.youtube.com/watch?v=je3hRYyAq_k">Интеграция ЕРИП, E-POS, интернет-эквайринг с WooCommerce | «Экспресс Платежи»</a>
+
+<a href="https://www.youtube.com/watch?v=eB8WfP36e-o">Настройка ЕРИП, E-POS, интернет-эквайринг с WooCommerce | «Экспресс Платежи»</a>
